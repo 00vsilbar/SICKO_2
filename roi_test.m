@@ -4,11 +4,12 @@ clear all
 close all
 
 plate_type = 't'; % 'w' or 't'
+snake_mode = 1; % change to 0 if you want a different movement order
 
-bottom_left = [39.55,50.3];   %A
-bottom_right = [13.2,50.45];
-top_left = [39.25,6];
-top_right = [12.9,6.1];      %B
+bottom_left = [39.55,50.5];   %A
+bottom_right = [12.9,50.8];
+top_left = [39.2,6.3];
+top_right = [12.7,6.4];      %B
 
 cols_terasaki = upper(["a","b","c","d","e","f","g","h"]);
 rows_terasaki = ["1","2","3","4","5","6","7","8","9","10","11","12"];
@@ -83,6 +84,12 @@ matrix_of_coords2d = reshape(matrix_of_coords,[Width*Height,2]);
 for i = 1:96
     well_key{i,4} = round(matrix_of_coords2d(i,1),4);  
     well_key{i,5} = round(matrix_of_coords2d(i,2),4);  
+end
+
+if snake_mode
+    movement_table = readtable('snake_mode.xlsx');
+    snake_order = table2cell(movement_table);
+    well_key(:,3) = snake_order(:,1);
 end
 
 writetable(cell2table(well_key,'VariableNames',well_key_header), 'well_key.csv')

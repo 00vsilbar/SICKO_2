@@ -45,8 +45,11 @@ num_wells_to_image = height(session_wells);
 vid = gigecam(1); % this is new sam added it 
 vid.BinningHorizontal = 3;
 vid.BinningVertical = 3;
+vid.AcquisitionFrameRate = 30;
+vid.ExposureTime = vid.AcquisitionFrameRate*1000; % meaured in milliseconds or 1/1000ths 
 
-fig = figure('NumberTitle','off','MenuBar','none','Position', [1050 600 850 425]);
+fig = uifigure('NumberTitle','off','MenuBar','none','Position', [1050 600 850 425]);
+fig.WindowStyle = 'alwaysontop';
 fig.Name = session_path;
 
 ax = axes(fig);                    %adjusting figure size to video preview
@@ -55,14 +58,15 @@ im = image(ax,zeros(size(frame),'uint8'));
 axis(ax,'image');
 h = preview(vid, im);
 
+fig2 = figure('NumberTitle','off','MenuBar','none','Position',[1050 100 850 425]); 
+fig2.Position = [1050 100 850 425];
+% fig2.WindowStyle = 'alwaysontop';
+
 disp('Homing GRBL')
 stream_gcode_commands(ser,"$H",1)
 
 images_per_iter = 3;
 time_between_images = 0.1;
-
-fig2 = figure('NumberTitle','off','MenuBar','none','Position',[1050 100 850 425]); 
-fig2.Position = [1050 100 850 425];
 
 % send wakeup and homing gcode
 for i = 1:num_wells_to_image
@@ -82,6 +86,7 @@ for i = 1:num_wells_to_image
     images = take_N_images_every_X_seconds_gige(vid,images_per_iter,time_between_images);
     write_images_to_session_new(session_path, images, this_well_label)
 
+    set(0,'CurrentFigure',fig2)
     p = imshow(imresize(images{1,images_per_iter},[320,480])); %shows last image taken
     drawnow;
     fig2.Name = ['Well ', this_well_label];
