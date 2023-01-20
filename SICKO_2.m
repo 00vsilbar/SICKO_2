@@ -46,7 +46,7 @@ vid = gigecam(1); % this is new sam added it
 vid.BinningHorizontal = 3;
 vid.BinningVertical = 3;
 vid.AcquisitionFrameRate = 30;
-vid.ExposureTime = vid.AcquisitionFrameRate*1000; % meaured in milliseconds or 1/1000ths 
+vid.ExposureTime = 30*1000; % meaured in milliseconds or 1/1000ths 
 
 fig = uifigure('NumberTitle','off','MenuBar','none','Position', [1050 600 850 425]);
 fig.WindowStyle = 'alwaysontop';
@@ -92,6 +92,10 @@ for i = 1:num_wells_to_image
     fig2.Name = ['Well ', this_well_label];
 
 end
+
+this_gcode = coordinates_to_G0_gcode([0.5,0.5],'X','Y'); %return to almost home when done
+stream_gcode_commands(ser,string(this_gcode),0)
+
 closePreview(vid)
 close(fig)
 
